@@ -3,11 +3,14 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.core import serializers
 
-from .models import User, Listing, Bid, Category
+from .models import User, Listing, Bid, Category, Watchlist
 
 
 def index(request):
+    if request.user.is_authenticated:
+        Watchlist.objects.get_or_create(user=request.user)
     return render(request, "auctions/index.html")
 
 
@@ -65,16 +68,56 @@ def register(request):
 
 def create(request):
     if request.method == "POST":
-        bid = Bid(user=request.user, value=request.POST["value"])
-        bid.save()
         if not request.POST["category"] is "":
             category = Category.objects.get(name=request.POST["category"])
         else:
             category = None
-        listing = Listing(title=request.POST["title"], description=request.POST["description"], bid=bid, image=request.POST["image"], category=category)
+        listing = Listing(title=request.POST["title"], description=request.POST["description"], starting=request.POST["value"], image=request.POST["image"], category=category, user=request.user)
         listing.save()
         return HttpResponseRedirect(f"/{listing.pk}")
-    return render(request, "auctions/create.html")
+    return render(request, "auctions/create.html", {
+        "Category" : Category.objects.values()
+    })
 
 def listing(request, id):
-    return render(request, "auctions/index.html")
+    message = None
+    if request.method == "POST":
+        listing = Listing.objects.get(id=id)
+        if listing.bid is not None:
+            if float(request.POST["value"]) > listing.bid.value:
+                bid = Bid(user=request.user, value=request.POST["value"])
+                bid.save()
+                listing.bid = bid
+                listing.save()
+            else:
+                message = "Your bid is too low."
+        else:
+            if float(request.POST["value"]) >= listing.starting:
+                bid = Bid(user=request.user, value=request.POST["value"])
+                bid.save()
+                listing.bid = bid
+                listing.save()
+            else:
+                message = "Your bid is too low."
+    return render(request, "auctions/listing.html", {
+        "listing" : Listing.objects.get(id=id),
+        "watchlist" : Watchlist.objects.get(user=request.user).item.all(),
+        "message" : message
+    })
+
+def add(request, id):
+    listing = Listing.objects.get(id=id)
+    if Watchlist.objects.filter(user=request.user, item=id).exists():
+        return HttpResponseRedirect(f"/{listing.pk}")
+    user_list, created = Watchlist.objects.get_or_create(user=request.user)
+    user_list.item.add(listing)
+    return HttpResponseRedirect(f"/{listing.pk}")
+
+def watchlist(request):
+    return render(request, "auctions/watchlist.html", {
+        "watchlist" : Watchlist.objects.get(user=request.user).item.all()
+    })
+
+def remove(request, id):
+    Watchlist.objects.get(user=request.user).item.remove(Listing.objects.get(id=id))
+    return HttpResponseRedirect(reverse("watchlist"))
