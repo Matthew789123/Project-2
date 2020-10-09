@@ -87,6 +87,7 @@ def listing(request, id):
             if float(request.POST["value"]) > listing.bid.value:
                 bid = Bid(user=request.user, value=request.POST["value"])
                 bid.save()
+                Bid.objects.get(id=listing.bid.pk).delete()
                 listing.bid = bid
                 listing.save()
             else:
