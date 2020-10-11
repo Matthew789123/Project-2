@@ -1,7 +1,26 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+    {% if watchlist %}
+        <h2>Watchlist</h2>
+    {% else %}
+        <h2>Active Listings</h2>
+    {% endif %}
 
-    TODO
+    {% for listing in listings %}
+        <div id="item" onclick="location.href={{ listing.id }};">
+            <img src={{ listing.image }} alt="No image" width="600" id="itemimg">
+            <div id="item_data">
+                <h1>{{ listing.title }}</h1>
+                <strong>Price: </strong>
+                {% if listing.bid is None %}
+                    ${{ listing.starting }}
+                {% else %}
+                    ${{ listing.bid.value }}
+                {% endif %}
+                <br><br>
+                <p>{{ listing.description }}</p>
+            </div>
+        </div>
+    {% endfor %}
 {% endblock %}

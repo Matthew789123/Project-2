@@ -57,4 +57,19 @@
     <div>
         {{ listing.description }}
     </div>
+    <br>
+    {% if user.is_authenticated %}
+        <form action="{% url 'make_comment' listing.id %}" method="POST">
+            {% csrf_token %}
+            <textarea name="comment" cols=70 rows=5 placeholder="Write a comment" required></textarea>
+            <br>
+            <input type="submit" value="Comment">
+        </form>
+    {% endif %}
+    <br>
+    <h2>Comments</h2>
+    {% for comment in comments %}
+        <strong>{{ comment.user }}</strong>
+        <p>{{ comment.comment }}</p>
+    {% endfor %}
 {% endblock %}

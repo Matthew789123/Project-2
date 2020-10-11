@@ -14,7 +14,7 @@ class Category(models.Model):
 
 class Listing(models.Model):
     title = models.CharField(max_length=64)
-    description = models.CharField(max_length=1000)
+    description = models.CharField(max_length=512)
     starting = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     bid = models.ForeignKey(Bid, on_delete=models.SET_NULL, blank=True, null=True)
     image = models.CharField(max_length=512, blank=True, null=True)

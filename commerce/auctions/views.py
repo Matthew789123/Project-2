@@ -5,13 +5,17 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.core import serializers
 
-from .models import User, Listing, Bid, Category, Watchlist
+from .models import User, Listing, Bid, Category, Watchlist, Comment
 
 
 def index(request):
+    watchlist = False
     if request.user.is_authenticated:
         Watchlist.objects.get_or_create(user=request.user)
-    return render(request, "auctions/index.html")
+    return render(request, "auctions/index.html", {
+        "listings" : Listing.objects.filter(opened=True),
+        "watchlist" : watchlist
+    })
 
 
 def login_view(request):
@@ -106,7 +110,8 @@ def listing(request, id):
     return render(request, "auctions/listing.html", {
         "listing" : Listing.objects.get(id=id),
         "watchlist" : watchlist,
-        "message" : message
+        "message" : message,
+        "comments" : Comment.objects.filter(listing=Listing.objects.get(id=id))
     })
 
 def add(request, id):
@@ -118,8 +123,10 @@ def add(request, id):
     return HttpResponseRedirect(f"/{listing.pk}")
 
 def watchlist(request):
-    return render(request, "auctions/watchlist.html", {
-        "watchlist" : Watchlist.objects.get(user=request.user).item.all()
+    watchlist = True
+    return render(request, "auctions/index.html", {
+        "listings" : Watchlist.objects.get(user=request.user).item.all(),
+        "watchlist" : watchlist
     })
 
 def remove(request, id):
@@ -130,4 +137,10 @@ def close(request, id):
     listing = Listing.objects.get(id=id)
     listing.opened = False
     listing.save()
+    return HttpResponseRedirect(f"/{listing.pk}")
+
+def make_comment(request, id):
+    listing = Listing.objects.get(id=id)
+    comment = Comment(user=request.user, listing=listing, comment=request.POST["comment"])
+    comment.save()
     return HttpResponseRedirect(f"/{listing.pk}")
