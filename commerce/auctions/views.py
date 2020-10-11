@@ -100,9 +100,12 @@ def listing(request, id):
                 listing.save()
             else:
                 message = "Your bid is too low."
+    watchlist = None
+    if request.user.is_authenticated:
+        watchlist = Watchlist.objects.get(user=request.user).item.all()
     return render(request, "auctions/listing.html", {
         "listing" : Listing.objects.get(id=id),
-        "watchlist" : Watchlist.objects.get(user=request.user).item.all(),
+        "watchlist" : watchlist,
         "message" : message
     })
 
@@ -122,3 +125,9 @@ def watchlist(request):
 def remove(request, id):
     Watchlist.objects.get(user=request.user).item.remove(Listing.objects.get(id=id))
     return HttpResponseRedirect(reverse("watchlist"))
+
+def close(request, id):
+    listing = Listing.objects.get(id=id)
+    listing.opened = False
+    listing.save()
+    return HttpResponseRedirect(f"/{listing.pk}")

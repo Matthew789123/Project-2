@@ -20,7 +20,13 @@ class Listing(models.Model):
     image = models.CharField(max_length=512, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    opened = models.BooleanField(default=True)
 
 class Watchlist(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     item = models.ManyToManyField(Listing)
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    comment = models.CharField(max_length=512)

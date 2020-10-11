@@ -11,6 +11,9 @@
         {% if listing in watchlist %}
             <a href="{% url 'remove' listing.id %}">Remove from watchlist</a>
         {% endif %}
+    {% if user == listing.user and listing.opened == True%}
+        <a href="{% url 'close' listing.id %}">Close</a>
+    {% endif %}
     {% endif %}
     <br>
     <img src={{ listing.image }} alt="No photo" width="800">
@@ -20,19 +23,29 @@
         {% if listing.bid.user == user %}
             <div><strong>It's your bid</strong></div>
         {% endif %}
+        {% if listing.opened == False and listing.bid.user == user %}
+            <h3>(Closed, you have won)</h3>
+        {% elif listing.opened == False %}
+            <h3>(Closed)</h3>
+        {% endif %}
     {% else %}
         <h2>Starting bid:</h2>
         <h3>${{ listing.starting }}</h3>
+        {% if listing.opened == False %}
+            <h3>(Closed)</h3>
+        {% endif %}
     {% endif %}
     {% if user.is_authenticated %}
         {% if message is not None %}
             <div>{{ message }}</div>
         {% endif %}
-        <form action={{ listing.id }} method="POST">
-            {% csrf_token %}
-            <input type="number" name="value" placeholder="Bid">
-            <input type="submit">
-        </form>
+        {% if listing.opened == True %}
+            <form action={{ listing.id }} method="POST">
+                {% csrf_token %}
+                <input type="number" name="value" placeholder="Bid">
+                <input type="submit">
+            </form>
+        {% endif %}
     {% endif %}
     <h2>Details</h2>
     <ul>
