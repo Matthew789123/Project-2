@@ -8,7 +8,7 @@
     {% endif %}
 
     {% for listing in listings %}
-        <div id="item" onclick="location.href={{ listing.id }};">
+        <div id="item" onclick="location.href='/{{ listing.id }}';">
             <img src={{ listing.image }} alt="No image" width="600" id="itemimg">
             <div id="item_data">
                 <h1>{{ listing.title }}</h1>

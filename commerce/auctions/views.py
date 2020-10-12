@@ -144,3 +144,14 @@ def make_comment(request, id):
     comment = Comment(user=request.user, listing=listing, comment=request.POST["comment"])
     comment.save()
     return HttpResponseRedirect(f"/{listing.pk}")
+
+def category(request):
+    return render(request, "auctions/category.html", {
+        "categories" : Category.objects.all()
+    })
+
+def category_items(request, id):
+    return render(request, "auctions/index.html", {
+        "watchlist" : False,
+        "listings" : Listing.objects.filter(category=Category.objects.get(id=id))
+    })
