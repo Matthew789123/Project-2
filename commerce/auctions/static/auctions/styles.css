@@ -2,19 +2,42 @@ body {
     padding: 10px;
 }
 
+a {
+    color: dimgray;
+    padding-left: 15px;
+}
+
 #item {
     margin-top: 30px;
-    height: 310px;
+    height: 300px;
     width: 100%;
     cursor: pointer;
+    background-color: gainsboro;
 }
 
 #itemimg {
     float: left;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 #item_data {
     
     float: left;
     margin-left: 3%;
+}
+
+.in {
+    margin-left: 5px;
+    margin-top: 10px;
+}
+
+#desc {
+    margin-top: 15px;
+}
+
+.btn {
+    margin-top: 10px;
+    width: 120px;
+    background-color: lightgray;
 }

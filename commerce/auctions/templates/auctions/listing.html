@@ -43,10 +43,11 @@
             <form action={{ listing.id }} method="POST">
                 {% csrf_token %}
                 <input type="number" name="value" placeholder="Bid">
-                <input type="submit">
+                <input type="submit" value="Send">
             </form>
         {% endif %}
     {% endif %}
+    <br>
     <h2>Details</h2>
     <ul>
         <li>Listed by {{ listing.user }}</li>
@@ -57,13 +58,13 @@
     <div>
         {{ listing.description }}
     </div>
-    <br>
+    <br><br>
     {% if user.is_authenticated %}
         <form action="{% url 'make_comment' listing.id %}" method="POST">
             {% csrf_token %}
             <textarea name="comment" cols=70 rows=5 placeholder="Write a comment" required></textarea>
             <br>
-            <input type="submit" value="Comment">
+            <input type="submit" value="Comment" class="btn">
         </form>
     {% endif %}
     <br>

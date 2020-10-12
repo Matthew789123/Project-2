@@ -8,24 +8,24 @@ Create
     <form action="{% url 'create' %}" method="POST">
         {% csrf_token %}
         <label for="title">Title</label>
-        <input type="text" name="title" id="title" required>
+        <input type="text" name="title" id="title" class="in" required>
         <br>
-        <textarea name="description" cols="90" rows="15" placeholder="Description" required></textarea>
+        <textarea name="description" cols="90" rows="15" placeholder="Description" id="desc" required></textarea>
         <br>
         <label for="value">Starting bid</label>
-        <input type="number" name="value" id="value" required>
+        <input type="number" name="value" id="value" class="in" required>
         <br>
         <label for="image">Image's url</label>
-        <input type="text" name="image" id="iamge">
+        <input type="text" name="image" id="iamge" class="in">
         <br>
         <label for="category">Category</label>
-        <select name="category" id="category">
+        <select name="category" id="category" class="in">
             <option selected value>No category</option>
             {% for category in Category %}
             <option value={{ category.name }}>{{ category.name }}</option>
             {% endfor %}
         </select>
         <br>
-        <input type="submit" value="ok">
+        <input type="submit" value="ok" class="btn">
     </form>
 {% endblock %}
